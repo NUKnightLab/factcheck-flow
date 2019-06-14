@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="Code.js"></script>
+  </head>
+  <body>
+     <button id="add-highlighter" onclick="addHighlight()"><i class="material-icons">add</i></button>
+     <ul id ="highlighter-library"></ul>
+  </body>
+  <script>
+      function addHighlight(){
+        const li = createHighlighterHTML('', '#ff0000');
+        document.getElementById('highlighter-library').appendChild(li);
+      }
+
+      function createHighlighterHTML(label, color){
+         const li = document.createElement('li');
+         li.className='highlighter-item';
+
+         const inputColor = document.createElement('input');
+         inputColor.className = 'highlighter-color';
+         inputColor.type = 'color';
+         inputColor.value = color;
+
+         const inputLabel = document.createElement('input');
+         inputLabel.className='highlighter-label';
+         inputLabel.type='text';
+         inputLabel.placeholder='Label';
+         inputLabel.value = label;
+
+         const inputRemove = document.createElement('button');
+         inputRemove.className = 'highlighter-remove';
+         inputRemove.onclick = function() {
+            $(this).parent().remove();
+         };
+
+         const inputRemoveIcon = document.createElement('i');
+         inputRemoveIcon.className = 'material-icons';
+         inputRemoveIcon.innerHTML = 'remove';
+         inputRemove.appendChild(inputRemoveIcon);
+
+         li.appendChild(inputColor);
+         li.appendChild(inputLabel);
+         li.appendChild(inputRemove);
+         console.log(li);
+         return li;
+      };
+
+      function hideHighlightLibrary(){
+         google.script.host.close();
+      }
+
+  </script>
+  <style>
+
+   #highlighter-library {
+     list-style-type: none;
+     padding-left: 0px;
+     margin-top: 5%;
+   }
+
+   li.highlighter-item{
+     display: flex;
+     flex-direction: row;
+     justify-content: center;
+     align-items: center;
+
+     margin-bottom: 5%;
+   }
+
+   input.highlighter-label{
+     width: 50%;
+     margin-left: 8%;
+     margin-right: 8%;
+     height: 35px;
+   }
+
+   input.highlighter-color{
+     float: left;
+     width: 72px;
+     height: 30px;
+   }
+
+   .highlighter-remove{
+     display: flex;
+     align-items: center;
+     text-align: center;
+     vertical-align: middle;
+     height: 35px;
+   }
+
+   i{
+      display: inline-flex;
+      vertical-align: middle;
+      margin: auto;
+   }
+
+  </style>
+</html>

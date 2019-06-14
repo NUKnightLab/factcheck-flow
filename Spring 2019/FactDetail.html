@@ -1,0 +1,162 @@
+<html>
+  <head>
+    <base target="_top">
+    <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
+    <!-- The CSS package above applies Google styling to buttons and other elements. -->
+
+    <style>
+       body{
+        padding: 15px;
+       }
+       .small-spacer{
+         height: 5px;
+       }
+
+       .unique-id-container{
+         visibility: hidden;
+       }
+
+       #fact-text{
+         font-size: 18pt;
+         line-height: normal;
+         font-weight: bold;
+       }
+
+      .block-spacer {
+        height: 13px;
+      }
+      .logo{
+      vertical-align:middle;
+    }
+      }
+    </style>
+    <script>
+    google.script.run
+             .withSuccessHandler(updateUIWithFactInfo)
+             .withFailureHandler(function(msg, element) { console.log("Error", msg) })
+             .withUserObject(this)
+             .retrieveCurrentFactFromDb();
+
+
+       function updateUIWithFactInfo(fact){
+         if(fact["unique-id"]){
+             document.getElementById("unique-id").innerHTML = fact["unique-id"];
+         }
+         if(fact["fact-text"]){
+             document.getElementById("fact-text").innerHTML = "Fact: \"" + fact["fact-text"] + "\"";
+         }
+         if(fact["assign-to"]){
+             document.getElementById("assign-to").value = fact["assign-to"];
+         };
+         if(fact["created-by"]){
+             document.getElementById("created-by").value = fact["created-by"];
+         };
+         if(fact["recommended-fix"]){
+             document.getElementById("recommended-fix").value = fact["recommended-fix"];
+         };
+         if(fact["source"]){
+             document.getElementById("source").value = fact["source"];
+         };
+
+         //TODO
+         if(fact["status"]){
+          //put correct status in html
+         };
+
+       }
+
+       function saveFact(uniqueId){
+         var assignTo = document.getElementById("assign-to").value;
+         var createdBy = document.getElementById("created-by").value;
+         var source = document.getElementById("source").value;
+         var recommendation = document.getElementById('recommended-fix').value;
+         var uniqueId = document.getElementById('unique-id').innerHTML;
+
+         var status="";
+         document.getElementsByName("status")
+                 .forEach(function(radioButton){
+                    if(radioButton.checked){
+                       status=radioButton.value;
+                       }
+         });
+         console.log(status);
+
+          google.script.run
+             .withFailureHandler(function(){
+                google.script.run.generalError();})
+             .updateFact(assignTo, createdBy, status, source, recommendation, uniqueId);
+       }
+
+       function deleteFact(){
+           var uniqueId = document.getElementById('unique-id').innerHTML;
+            google.script.run
+             .withFailureHandler(function(){
+                console.log("error deleteFact");})
+             .deleteFact(uniqueId);
+       }
+    </script>
+  </head>
+  <body>
+    <div id="fact-text" style="padding: 3px;">Fact: </div>
+    <hr>
+    <div class="block-spacer"> </div>
+    <form>
+
+      <div>
+        <img alt="Add-on logo" class="logo" src="http://chittagongit.com/download/102007" width="20" height="20">
+       <span><b>Details</b></span>
+         <div class="small-spacer"></div>
+           <input class="status" type="radio" name="status" value="unverified">Unverified
+           <input class="status" type="radio" name="status" value="correct">Correct
+           <input class="status" type="radio" name="status" value="incorrect">Incorrect
+      </div>
+      <div class="block-spacer"> </div>
+       <div>
+        <img alt="Add-on logo" class="logo" src="https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_search_48px-512.png" width="27" height="27">
+        <span><b>Sources</b></span>
+        <span>
+        <select class="dropdown-menu" id="type" style="background:#ffe8ed; border: none; margin-bottom: 5px;">
+            <option value="ns">No Source</option>
+            <option value="in">Interview</option>
+            <option value="rp">Research Paper</option>
+            <option value="ws">Website</option>
+        </select>
+        </span>
+        <br>
+        <textarea id="source" rows="4" style="width: 100%; background: #f4f6f7; border: none;"></textarea>
+      </div>
+
+      <div class="block-spacer"> </div>
+      <div class="people">
+         <img alt="Add-on logo" class="logo" src="https://png.pngtree.com/svg/20170420/b7c37c5a9e.png" width="23" height="23">
+         <span><b>People</b></span>
+         <br>
+        Created By: <input id="created-by" type="text" style=" background: #f4f6f7; border: none;" >
+        <div class="small-spacer"></div>
+        Assigned To: <input id="assign-to" type="text" style="background: #f4f6f7; border: none;">
+      </div>
+
+      <div class="block-spacer"> </div>
+      <div>
+        <img alt="Add-on logo" class="logo" src="https://www.freeiconspng.com/uploads/hardware-icon-9.png" width="27" height="27">
+        <span><b>Recommended Fix</b></span>
+        <br>
+        <textarea id="recommended-fix" rows="4" style="width: 100%; background: #f4f6f7; border: none;"></textarea>
+      </div>
+   </form>
+
+   <div class='unique-id-container'>
+     <p id='unique-id'></p>
+   </div>
+
+   <div>
+     <button class="blue" onclick='saveFact()'>Save</button>
+     <button onclick='deleteFact()' id="delete-fact">Delete</button>
+   </div>
+
+   <div class="sidebar bottom">
+      <img alt="Add-on logo" class="logo" src="https://pbs.twimg.com/profile_images/925054221237370880/lbvbFtwu.jpg" width="27" height="27">
+      <span class="gray branding-text">Powered by Knight Lab@Northwestern</span>
+   </div>
+  </body>
+ </html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+ <head>
+    <base target="_top">
+    <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
+    <!-- The CSS package above applies Google styling to buttons and other elements. -->
+        <link rel="stylesheet" href="https://ssl.gstatic.com/docs/script/css/add-ons1.css">
+    <!-- import JQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <script src="Code.js"></script>
+    <script>
+
+          google.script.run
+             .withSuccessHandler(populateFactsInSidebar)
+             .withFailureHandler(function(msg, element) {
+                console.log("Error", msg)
+                })
+             .withUserObject(this)
+             .getFactsFromDB();
+
+        function populateFactsInSidebar(facts){
+          var container = document.getElementById("list-container");
+          var factCounter = 1;
+          for(var key in facts){
+            var block_to_insert = document.createElement('div');
+            container.appendChild(block_to_insert);
+            block_to_insert.innerHTML =  "<div class='match' id='fact-"+ factCounter+"' style='background-color: transparent;'>\
+            <div class='people' id='assigned-to-" + factCounter + "'></div>\
+            <div class='rulemessage' id='fact-title-"+factCounter+"'></div>\
+            <div class='factArea'>Source type: <span class='fact_type'>Interview</span></div>\
+            </div>"
+
+            document.getElementById("fact-title-"+factCounter).innerHTML= factCounter+ ": " + facts[key]["fact-text"];
+            if(facts[key]["assign-to"] != undefined && facts[key]["assign-to"] != ""){
+              document.getElementById("assigned-to-"+factCounter).innerHTML= facts[key]["assign-to"].substring(0,2);
+            }else{
+              document.getElementById("assigned-to-"+factCounter).innerHTML= "-";
+            }
+            if(factCounter%2 == 0){
+              document.getElementById("fact-" + factCounter).setAttribute("style","background-color: rgb(244, 244, 245);");
+            }
+           factCounter++;
+          }
+        }
+
+       function addFact(factText, highlighterId, textRangeStart, textRangeEnd) {
+            google.script.run.withFailureHandler(highlightFailure).highlightSelection("#f7f271");//newHighlight
+            google.script.run.writeNewFactData("unverified");
+       }
+
+         function jumpToFact(){
+          google.script.run
+             .withSuccessHandler()
+             .withFailureHandler(function(msg, element) {
+                console.log("Error", msg)
+                })
+             .withUserObject(this)
+             .findFactInDb();
+       }
+
+       function highlightFailure(e){
+            google.script.run.withFailureHandler(function(){
+               google.script.run.generalError();})
+            .showRequireSelectionError();
+       }
+       /*
+       function showHighlightLibrary(){
+            google.script.run.withFailureHandler(function(){
+               google.script.run.generalError();})
+               .showHighlighterLibraryDialog();
+       }
+       */
+
+
+    </script>
+
+    <style>
+
+.afbutton{
+  text-align: center;
+  background: #ffe500;
+  border:none;
+  display:block;
+  margin-left:auto;
+  margin-right:auto;
+  width: 50%;
+}
+
+.rulemessage{
+  font-weight:bold;
+}
+
+.logo {
+  vertical-align: middle;
+}
+
+.small-spacer{
+      height: 30px;
+}
+
+.match {
+    margin-bottom: 10px;
+    padding: 7px;
+}
+.factArea {
+    margin-top: 3px;
+    color: #777777;
+    margin-bottom: 3px;
+}
+
+.replacement:hover {
+    background-color: #ffe790;
+    text-decoration: none;
+}
+.replacement {
+    font-weight: bold;
+    margin-bottom: 2px;
+    padding: 3px;
+    display: inline-block;
+    height: 150%;
+    color: black;
+    background-color: #fff3c7;
+    text-decoration: none;
+    display: inline-block;
+}
+.people {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    font-size: 15px;
+    color: #fff;
+    line-height: 30px;
+    text-align: center;
+    background: #606060;
+    float: right;
+    font-weight:bold;
+}
+    </style>
+  </head>
+
+  <body>
+    <button id="find-fact-button" onclick="jumpToFact()">Jump to Fact</button>
+    <p style="width: 90%; text-align:center; margin-left: auto; margin-right: auto;"><b>Welcome to Fact Flow!</b>
+    It's a tool produced by the Medill Knight Lab to help publications digitalize their factchecking process. <mark>Start highlighting now!</mark></p>
+    <br>
+    <button class="afbutton" id="add-fact-button" onclick="addFact()">Add Fact</button>
+
+    <div class="small-spacer"></div>
+
+    <div style="background-color: black; color: #fff; font-size: 15px; padding:3px"><b>Fact List</b></div>
+    <div id="list-container">
+
+
+    </div>
+ <!-- <div class="sidebar bottom">
+      <img alt="Add-on logo" class="logo" src="https://pbs.twimg.com/profile_images/925054221237370880/lbvbFtwu.jpg" width="27" height="27">
+      <span class="gray branding-text">Powered by Knight Lab@Northwestern</span>
+    </div> -->
+
+    <!--
+      <button id="pink"
+      style="background: #fcd1e5;
+      min-width: 200px;
+      border: 0px;"
+      onclick="addFact('#fcd1e5')">Proper Noun</button>
+      <div class="small-spacer"> </div>
+
+      <button id="blue" style="background: #c9e4ff;min-width: 200px;
+      border: 0px;"  onclick="highlight('#c9e4ff')">Statistics</button>
+      <div class="small-spacer"> </div>
+
+      <button id="yellow" style="background: #ffdb70; min-width: 200px;
+      border: 0px;" onclick="highlight('#ffdb70')">Time</button>
+      <div class="small-spacer"> </div>
+
+
+      <button id="green" style="background: #c0e5bc;min-width: 200px;
+      border: 0px;" onclick="highlight('#c0e5bc')">Quote</button>
+      <div class="small-spacer"> </div>
+-->
+
+  </body>
+</html>
